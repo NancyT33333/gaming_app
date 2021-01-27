@@ -1,0 +1,128 @@
+{
+    "_version": "1.8.0",
+    "sap.app": {
+        "id": "customer",
+        "type": "application",
+        "title": "Browse Games",
+        "description": "Sample Application",
+        "i18n": "i18n/i18n.properties",
+        "dataSources": {
+            "CustomerService": {
+                "uri": "/customer/",
+                "type": "OData",
+                "settings": {
+                    "odataVersion": "4.0"
+                }
+            }
+        },
+        "-sourceTemplate": {
+            "id": "ui5template.basicSAPUI5ApplicationProject",
+            "-id": "ui5template.smartTemplate",
+            "-version": "1.40.12"
+        }
+    },
+    "sap.ui5": {
+        "dependencies": {
+            "libs": {
+                "sap.fe": {}
+            }
+        },
+        "models": {
+            "i18n": {
+                "type": "sap.ui.model.resource.ResourceModel",
+                "uri": "i18n/i18n.properties"
+            },
+            "": {
+                "dataSource": "CustomerService",
+                "settings": {
+                    "synchronizationMode": "None",
+                    "operationMode": "Server",
+                    "autoExpandSelect" : true,
+                    "earlyRequests": true,
+                    "groupProperties": {
+                        "default": {
+                            "submit": "Auto"
+                        }
+                    }
+                }
+            }
+        },
+        "routing": {
+            "routes": [
+                {
+                    "pattern": ":?query:",
+                    "name": "GamesList",
+                    "target": "GamesList"
+                },
+                {
+                    "pattern": "Games({key}):?query:",
+                    "name": "GamesDetails",
+                    "target": "GamesDetails"
+                },
+                {
+                    "pattern": "Games({key}/author({key2}):?query:",
+                    "name": "PublishersDetails",
+                    "target": "PublishersDetails"
+                }
+            ],
+            "targets": {
+                "GamesList": {
+                    "type": "Component",
+                    "id": "GamesList",
+                    "name": "sap.fe.templates.ListReport",
+                    "options": {
+                        "settings" : {
+                            "entitySet" : "Games",
+                            "navigation" : {
+                                "Games" : {
+                                    "detail" : {
+                                        "route" : "GamesDetails"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "GamesDetails": {
+                    "type": "Component",
+                    "id": "GamesDetailsList",
+                    "name": "sap.fe.templates.ObjectPage",
+                    "options": {
+                        "settings" : {
+                            "entitySet" : "Games",
+                            "navigation" : {
+                                "Publishers" : {
+                                    "detail" : {
+                                        "route" : "PublishersDetails"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "PublishersDetails": {
+                    "type": "Component",
+                    "id": "PublishersDetailsList",
+                    "name": "sap.fe.templates.ObjectPage",
+                    "options": {
+                        "settings" : {
+                            "entitySet" : "Publishers"
+                        }
+                    }
+                }
+            }
+        },
+        "contentDensities": {
+            "compact": true,
+            "cozy": true
+        }
+    },
+    "sap.ui": {
+        "technology": "UI5",
+        "fullWidth": false
+    },
+    "sap.fiori": {
+        "registrationIds": [],
+        "archeType": "transactional"
+    }
+}

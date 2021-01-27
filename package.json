@@ -1,18 +1,46 @@
 {
-  "name": "gamingapp",
-  "version": "1.0.0",
-  "description": "A simple CAP project.",
-  "repository": "<Add your repository here>",
-  "license": "UNLICENSED",
-  "private": true,
-  "dependencies": {
-    "@sap/cds": "^4",
-    "express": "^4"
-  },
-  "devDependencies": {
-    "sqlite3": "^5"
-  },
-  "scripts": {
-    "start": "cds run"
-  }
+    "name": "gamingapp",
+    "version": "1.0.0",
+    "description": "A simple CAP project.",
+    "repository": "<Add your repository here>",
+    "license": "UNLICENSED",
+    "private": true,
+    "dependencies": {
+        "@sap/cds": "^4",
+        "express": "^4",
+        "passport": "latest"
+    },
+    "devDependencies": {
+        "jest": "^26.6.3",
+        "sqlite3": "^5"
+    },
+    "scripts": {
+        "start": "cds run --in-memory",
+        "test": "jest"
+    },
+    "cds": {
+        "auth": {
+            "passport": {
+                "strategy": "mock",
+                "users": {
+                    "administrator": {
+                        "ID": "administrator",
+                        "password": "123",
+                        "roles": [
+                            "administrator",
+                            "authenticated-user"
+                        ]
+                    },
+                    "customer": {
+                        "ID": "customer",
+                        "password": "123",
+                        "roles": [
+                            "customer",
+                            "authenticated-user"
+                        ]
+                    }
+                }
+            }
+        }
+    }
 }
