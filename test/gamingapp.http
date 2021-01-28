@@ -6,23 +6,15 @@ GET http://localhost:4004/browse/$metadata
 
 ### Browsing Games
 GET http://localhost:4004/browse/Games?
-# &$select=title,author
-# &$expand=currency
-# &sap-language=de
+
 
 ### Browsing Publishers
 GET http://localhost:4004/admin/Publishers?
-# &$select=name,dateOfBirth,placeOfBirth
-# &$expand=books($select=title;$expand=currency)
-# &$filter=ID eq 101
-# &sap-language=de
+
 
 ### Browsing Games
 GET http://localhost:4004/admin/Games?
-# &$select=name,dateOfBirth,placeOfBirth
-# &$expand=books($select=title;$expand=currency)
-# &$filter=ID eq 101
-# &sap-language=de
+
 
 
 ### Create new Publisher
@@ -45,6 +37,9 @@ Content-Type: application/json;charset=UTF-8;IEEE754Compatible=true
     "price": "3.00"
 }
 ### Delete  Game
-DELETE  http://localhost:4004/admin/Games(109)
+DELETE  http://localhost:4004/browse/Games(109)
 Content-Type: application/json;charset=UTF-8;IEEE754Compatible=true
 
+### Delete  Game as admin
+DELETE  http://localhost:4004/admin/Games(109)
+Content-Type: application/json;charset=UTF-8;IEEE754Compatible=true
