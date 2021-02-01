@@ -20,8 +20,19 @@ annotate my.Games with @(
             {Value: rating, Label:'{i18n>Rating}'},
 			{Value: publisher.name, Label:'{i18n>Publisher}'},			
 			{Value: price}			
-		]
-	}
+		],
+        FieldGroup #GeneralInformation : {
+            $Type : 'UI.FieldGroupType',
+            Data : [
+                {
+                    $Type : 'UI.DataField',
+                    Value : rating,
+                },
+            ],
+        },
+     
+	}  
+    
 ) {
 	publisher @ValueList.entity:'Publishers';
 };
@@ -66,6 +77,7 @@ annotate my.Games with {
 	publisher @title:'{i18n>PublisherID}';
 	price @title:'{i18n>Price}';	
 	description @UI.MultiLineText;
+    image  @( Common.Label: 'Image',  UI.IsImageURL: true);
 }
 
 
