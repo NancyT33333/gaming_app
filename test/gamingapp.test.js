@@ -8,6 +8,7 @@ describe('Gamingstoreapp: OData Protocol Level Testing', () => {
     else cds.User = cds.User.Privileged
     const app = require('express')()
     const request = require('supertest')(app)
+    let annotations = undefined;
 
     beforeAll(async () => {        
         await cds.deploy(__dirname + '/../srv/cat-service').to('sqlite::memory:')
@@ -15,7 +16,26 @@ describe('Gamingstoreapp: OData Protocol Level Testing', () => {
         await cds.serve('CustomerService').from(__dirname + '/../srv/cat-service').in(app)
         await cds.serve('AdminService').from(__dirname + '/../srv/admin-service').in(app)
         // cds.on('bootstrap', app => app.use(proxy()))
+        // annotations = await getAnnotations();
     })
+    // async function getAnnotations() {
+    //     const parser = require("fast-xml-parser");
+    //     const response = await request
+    //         .get("/browse/$metadata")
+    //         // .auth("customer", "")
+    //         .expect(200);
+
+    //     const metadata = parser.parse(response.text, {
+    //         ignoreAttributes: false,
+    //         parseAttributeValue: true,
+    //         attributeNamePrefix: "",
+    //         parseNodeValue: true,
+    //         allowBooleanAttributes: true
+    //     });
+    //     const annotations = metadata['edmx:Edmx']['edmx:DataServices']['Schema']['Annotations'];
+    //     return annotations;
+    // }
+
     it('Service $metadata document', async () => {
         const response = await request
             .get('/browse/$metadata')
@@ -155,16 +175,17 @@ describe('Gamingstoreapp: OData Protocol Level Testing', () => {
         ])
     })
 
-    it('serves annotations for fiori elements', async () => {
-        const response = await  request.get("/browse/$metadata")
-            .expect(200).expect('Content-Type', "/^application\/xml/")
-        console.log(response.text);
+    // it('serves annotations for fiori elements', async () => {
+    //     const response = await  request.get("/browse/$metadata")
+    //         .expect(200).expect('Content-Type', "/^application\/xml/")
+    //     console.log(response.text);
 
-        expect(response.text.includes('<Annotation Term="UI.LineItem">')).toBeTruthy()
-        expect(response.text.includes('<Annotation Term="UI.Identification">')).toBeTruthy()
-        expect(response.text.includes('<Record Type="Common.ValueListType">')).toBeTruthy()
-    })
+    //     expect(response.text.includes('<Annotation Term="UI.LineItem">')).toBeTruthy()
+    //     expect(response.text.includes('<Annotation Term="UI.Identification">')).toBeTruthy()
+    //     expect(response.text.includes('<Record Type="Common.ValueListType">')).toBeTruthy()
+    // })
 
+    
     it('Get with search', async () => {
         const response = await request
             .get('/browse/Games?$search=Last%20of')
@@ -195,6 +216,59 @@ describe('Gamingstoreapp: OData Protocol Level Testing', () => {
         ])
     })
 })
+
+describe("GameService: OData Annotations", () => {
+    const app = require("express")();
+    const request = require("supertest")(app);
+    let annotations = undefined;
+
+    beforeAll(async () => {
+        // await cds.deploy(`${__dirname}/../srv/game-service.cds`).to("sqlite::memory");
+        // await cds.serve("GameService").from(`${__dirname}/../app/index.cds`).in(app);
+
+        await cds.deploy(__dirname + '/../srv/cat-service.cds').to('sqlite::memory:')    
+        await cds.serve('CustomerService').from(__dirname + '/../app/index.cds').in(app)     
+        annotations = await getAnnotations();
+    });
+
+    async function getAnnotations() {
+        const parser = require("fast-xml-parser");
+        const response = await request
+            .get("/browse/$metadata")
+            .auth("customer", "")
+            .expect(200);
+
+        const metadata = parser.parse(response.text, {
+            ignoreAttributes: false,
+            parseAttributeValue: true,
+            attributeNamePrefix: "",
+            parseNodeValue: true,
+            allowBooleanAttributes: true
+        });
+        const annotations = metadata['edmx:Edmx']['edmx:DataServices']['Schema']['Annotations'];
+        return annotations;
+    }
+
+   
+
+    it("Check that Games entity set annotated with @UI.SelectionFields", async () => {
+        expect(expect(annotations).not.toBeNull() || expect(annotations).not.toBeUndefined());
+        const entitySetAnnotations = annotations.filter(el => el.Annotation instanceof Array && el.Annotation.filter(an => an['Term'] === 'UI.SelectionFields').length)[0];
+        expect(entitySetAnnotations['Annotation']).not.toBeUndefined();
+        const selectionFields = entitySetAnnotations.Annotation.find(el => el.Term === 'UI.SelectionFields');
+        expect(selectionFields).not.toBeUndefined();
+    });
+
+    it("Check that Games entity set annotated with @UI.HeaderInfo", async () => {
+        expect(expect(annotations).not.toBeNull() || expect(annotations).not.toBeUndefined());
+        const entitySetAnnotations = annotations.filter(el => el.Annotation instanceof Array && el.Annotation.filter(an => an['Term'] === 'UI.HeaderInfo').length)[0];
+        expect(entitySetAnnotations['Annotation']).not.toBeUndefined();
+        const headerInfo = entitySetAnnotations.Annotation.find(el => el.Term === 'UI.HeaderInfo');
+        expect(headerInfo).not.toBeUndefined();
+    });
+
+  
+});
 
 describe('Gamingstoreapp: CDS Service Level Testing', () => {
     let srv, Games

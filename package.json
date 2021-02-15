@@ -10,6 +10,7 @@
         "@sap/cds-odata-v2-adapter-proxy": "^1.5.4",
         "dev": "^0.1.3",
         "express": "^4",
+        "fast-xml-parser": "^3.18.0",
         "passport": "latest"
     },
     "devDependencies": {
@@ -26,17 +27,13 @@
             "passport": {
                 "strategy": "mock",
                 "users": {
-                    "administrator": {
-                        "ID": "administrator",
-                        "password": "123",
+                    "administrator": {   
                         "roles": [
                             "administrator",
                             "authenticated-user"
                         ]
                     },
                     "customer": {
-                        "ID": "customer",
-                        "password": "123",
                         "roles": [
                             "customer",
                             "authenticated-user"
